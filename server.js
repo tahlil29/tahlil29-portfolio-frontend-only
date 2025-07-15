@@ -1,28 +1,26 @@
 require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const nodemailer = require('nodemailer');
-const cors = require('cors'); // Import cors
+const cors = require('cors');
+const fetch = require('node-fetch'); // Import node-fetch for making HTTP requests
 
 const app = express();
-const port = process.env.PORT || 3000; // Use port from environment or 3000
+const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.json()); // For parsing JSON request bodies
+app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5500' // Allow requests from your local development server (e.g., Live Server)
-    // For production on Railway, you might set this to your front-end URL
-    // e.g., origin: 'https://your-portfolio-frontend.railway.app'
-    // Or if you want to allow all origins (less secure for production but fine for testing)
-    // origin: '*'
+    origin: 'https://tahlil29-my-portfolio-frontend.onrender.com' // For local dev
+    // For production on Railway, replace with your frontend URL:
+    // origin: 'https://your-portfolio-frontend-xxxxx.railway.app'
 }));
 
-// Nodemailer transporter setup
-// Use your actual email service (e.g., Gmail, Outlook, SendGrid)
+// Nodemailer transporter setup (Optional: Keep this if you still want email notifications)
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Or 'outlook', 'smtp.yourdomain.com' etc.
+    service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // Your sending email address
-        pass: process.env.EMAIL_PASS  // Your email password or app password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -34,40 +32,66 @@ app.post('/send-message', async (req, res) => {
         return res.status(400).json({ message: 'All fields are required.' });
     }
 
-    const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender address
-        to: process.env.RECEIVING_EMAIL, // Receiver address
-        subject: `New Contact Form Message from ${name} (Portfolio)`,
-        html: `
-            <p>You have received a new message from your portfolio contact form.</p>
-            <h3>Contact Details:</h3>
-            <ul>
-                <li><strong>Name:</strong> ${name}</li>
-                <li><strong>Email:</strong> ${email}</li>
-            </ul>
-            <h3>Message:</h3>
-            <p>${message}</p>
-            <hr>
-            <p>This message was sent from your portfolio website.</p>
-        `
-    };
-
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!');
-        res.status(200).json({ message: 'Message sent successfully!' });
+        // --- Step 1: Send Data to Google Apps Script (for Sheet storage) ---
+        const googleAppsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL; // Get URL from environment variable
+
+        if (!googleAppsScriptUrl) {
+            console.error('GOOGLE_APPS_SCRIPT_URL not set in environment variables!');
+            return res.status(500).json({ message: 'Server configuration error.' });
+        }
+
+        const sheetResponse = await fetch(googleAppsScriptUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, message }), // Send the form data
+        });
+
+        const sheetResult = await sheetResponse.json();
+
+        if (!sheetResponse.ok || !sheetResult.success) {
+            console.error('Failed to send data to Google Sheet:', sheetResult.message || 'Unknown error');
+            // Decide if you want to stop here or continue to email if sheet fails
+            // For now, we'll log and still try to send email if configured
+        } else {
+            console.log('Data successfully sent to Google Sheet!');
+        }
+
+        // --- Step 2: Send Email Notification (Optional) ---
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.RECEIVING_EMAIL) {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: process.env.RECEIVING_EMAIL,
+                subject: `New Contact Form Message from ${name} (Portfolio)`,
+                html: `
+                    <p>You have received a new message from your portfolio contact form.</p>
+                    <h3>Contact Details:</h3>
+                    <ul>
+                        <li><strong>Name:</strong> ${name}</li>
+                        <li><strong>Email:</strong> ${email}</li>
+                    </ul>
+                    <h3>Message:</h3>
+                    <p>${message}</p>
+                    <hr>
+                    <p>This message was sent from your portfolio website.</p>
+                `
+            };
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent successfully!');
+        } else {
+            console.warn('Email sending skipped: Email environment variables not fully configured.');
+        }
+
+        res.status(200).json({ message: 'Message sent successfully! (and saved to sheet)' });
+
     } catch (error) {
-        console.error('Error sending email:', error);
-        res.status(500).json({ message: 'Failed to send message.', error: error.message });
+        console.error('Error processing message:', error);
+        res.status(500).json({ message: 'An internal server error occurred.', error: error.message });
     }
 });
 
-// Optional: Serve static files from your frontend if both are in the same repo
-// For this setup, we assume frontend is separate.
-// If you want to serve frontend and backend from the same Railway app:
-// app.use(express.static('public')); // Assuming your frontend is in a 'public' folder
-
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
-    console.log(`Access backend at: http://localhost:${port}`);
 });
