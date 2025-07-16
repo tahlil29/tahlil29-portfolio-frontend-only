@@ -1,84 +1,95 @@
-// For Side Menu functionality (if not already there)
-function openNav() {
-    document.getElementById("sideMenu").style.width = "250px";
-    document.getElementById("mainContent").style.marginLeft = "250px";
-}
+// js/script.js
 
-function closeNav() {
-    document.getElementById("sideMenu").style.width = "0";
-    document.getElementById("mainContent").style.marginLeft = "0";
-}
-
-// --- Designation Slider Animation ---
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Side Menu Functionality ---
+    // Function to open the side menu
+    window.openNav = function() {
+        document.getElementById("sideMenu").style.width = "250px";
+        document.getElementById("mainContent").style.marginLeft = "250px";
+    }
+
+    // Function to close the side menu
+    window.closeNav = function() {
+        document.getElementById("sideMenu").style.width = "0";
+        document.getElementById("mainContent").style.marginLeft = "0";
+    }
+
+    // --- Designation Slider Animation ---
     const designations = document.querySelectorAll('.designation-text');
     let currentIndex = 0;
 
-    function animateDesignations() {
-        // Hide all designations first
-        designations.forEach(span => {
-            span.style.opacity = '0';
-            span.style.transform = 'translateY(100%)'; // Move them down
-        });
+    // Ensure there are designations to animate
+    if (designations.length > 0) {
+        // Initially show the first designation. This runs as soon as the DOM is ready.
+        designations[currentIndex].style.opacity = '1';
+        designations[currentIndex].style.transform = 'translateY(0)';
 
-        // Show the current designation
-        const currentDesignation = designations[currentIndex];
-        currentDesignation.style.opacity = '1';
-        currentDesignation.style.transform = 'translateY(0)'; // Move it into view
+        // Function to animate the designations
+        function animateDesignations() {
+            // Hide the current designation (move up and fade out)
+            designations[currentIndex].style.opacity = '0';
+            designations[currentIndex].style.transform = 'translateY(-100%)';
 
-        currentIndex = (currentIndex + 1) % designations.length; // Cycle to the next
+            // Move to the next index, looping back to the start if at the end
+            currentIndex = (currentIndex + 1) % designations.length;
+
+            // Show the next designation (move down into view and fade in)
+            const nextDesignation = designations[currentIndex];
+            nextDesignation.style.opacity = '1';
+            nextDesignation.style.transform = 'translateY(0)';
+        }
+
+        // Start the animation. The first transition will happen AFTER 3 seconds,
+        // allowing the initial text to be visible for that duration.
+        setTimeout(() => {
+            setInterval(animateDesignations, 3000); // Change text every 3 seconds
+        }, 3000);
     }
 
-    // Run the animation every few seconds
-    // Initial display
-    designations[currentIndex].style.opacity = '1';
-    designations[currentIndex].style.transform = 'translateY(0)';
-    currentIndex = (currentIndex + 1) % designations.length;
 
-    setInterval(animateDesignations, 3000); // Change text every 3 seconds
-});
-
-// --- Contact Form JavaScript (if you still have it, keep it) ---
-// If you want to put your contact form submission logic here,
-// ensure it's not conflicting with the new `server.js` by sending data.
-// Here's the basic structure from previous discussions, assuming your backend is at /send-message
-document.addEventListener('DOMContentLoaded', () => {
+    // --- Contact Form JavaScript ---
     const contactForm = document.getElementById('contactForm');
     const formMessage = document.getElementById('formMessage');
 
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default form submission
 
             const formData = new FormData(contactForm);
-            const data = Object.fromEntries(formData.entries());
+            const data = Object.fromEntries(formData.entries()); // Convert form data to a plain object
 
             try {
+                // Send the form data to your Render backend
                 const response = await fetch('https://tahlil29-portfolio-backend-api.onrender.com/send-message', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data) // Send data as JSON
                 });
 
-                const result = await response.json();
+                const result = await response.json(); // Parse the JSON response from backend
 
-                if (response.ok) {
+                if (response.ok) { // Check if the response status is 2xx
                     formMessage.textContent = result.message;
                     formMessage.className = 'form-message success';
-                    contactForm.reset(); // Clear the form
+                    contactForm.reset(); // Clear the form fields on success
                 } else {
+                    // If backend sends an error status
                     formMessage.textContent = result.message || 'Failed to send message.';
                     formMessage.className = 'form-message error';
                 }
             } catch (error) {
+                // Catch network errors or other unexpected issues
                 console.error('Error:', error);
-                formMessage.textContent = 'Network error: Could not reach the server.';
+                formMessage.textContent = 'Network error: Could not reach the server or unexpected issue.';
                 formMessage.className = 'form-message error';
             } finally {
+                // Always display the message div after an attempt
                 formMessage.style.display = 'block';
             }
         });
     }
-});
+
+}); // End DOMContentLoaded
