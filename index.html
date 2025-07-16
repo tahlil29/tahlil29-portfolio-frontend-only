@@ -36,11 +36,21 @@
                 <img src="assets/images/profile-pic.jpg" alt="Your Profile Picture" class="profile-pic">
                 <h1>Your Full Name</h1>
                 <div class="designation-slider">
-                    <span class="designation-text">Web Developer</span>
-                    <span class="designation-text">UI/UX Designer</span>
-                    <span class="designation-text">Front-End Enthusiast</span>
-                    <span class="designation-text">Problem Solver</span>
-                    <span class="designation-text">Creative Coder</span>
+                    <span id="element"> </span>
+                        <script>
+                             var typed = new Typed("#element", {
+                                strings: [
+                                    "Full Stack Web Developer",
+                                    "Programmer",
+                                    "Responsive Web Designer",
+                                    "UI/UX Developer",
+                                ],
+                                    typeSpeed: 50,
+                                    backSpeed: 50,
+                                    loop: true,
+                                });
+                                </script>
+
                 </div>
                 <div class="cta-buttons">
                     <a href="assets/Your-CV.pdf" download class="btn primary-btn">Download CV</a>
