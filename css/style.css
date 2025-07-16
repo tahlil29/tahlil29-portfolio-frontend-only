@@ -128,7 +128,8 @@ section {
 
 /* --- Animated Hero Banner --- */
 .hero-banner {
-    background-color: #0056b3; /* Fallback */
+    background-image: url('../assets/images/banner-bg1.avif'); /* CHANGE THIS PATH */
+    background-color: #0056b3; /* Fallback color if image fails to load */
     background-size: cover;
     background-position: center;
     color: #fff;
@@ -138,10 +139,11 @@ section {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 70vh; /* Adjust height as needed */
+    min-height: 70vh;
     position: relative;
-    overflow: hidden; /* Hide overflow of background images */
-    transition: background-image 1s ease-in-out; /* Smooth transition for background */
+    overflow: hidden;
+    /* Optional: Remove or adjust if you don't have dynamic background changes */
+    transition: background-image 1s ease-in-out;
 }
 
 .hero-banner::before {
@@ -198,8 +200,9 @@ section {
 
 .cta-buttons {
     display: flex;
+    flex-direction: column; /* CHANGE to column */
     gap: 20px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* This can probably be removed if flex-direction is column */
     justify-content: center;
     align-items: center;
     margin-top: 20px;
@@ -239,7 +242,6 @@ section {
 .social-links img {
     width: 35px;
     height: 35px;
-    filter: invert(100%); /* Make SVGs white if needed */
     transition: transform 0.2s ease;
 }
 
