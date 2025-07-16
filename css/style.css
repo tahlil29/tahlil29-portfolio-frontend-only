@@ -186,7 +186,7 @@ section {
     text-align: center;
     opacity: 0; /* Make them invisible by default */
     transform: translateY(100%); /* Position them off-screen below */
-    transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out; /* Smooth animation */
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; /* Smooth animation */
 }
 
 /* Ensure the slider container has a fixed height and hides overflow */
