@@ -240,7 +240,7 @@ section {
     display: flex;
     gap: 20px; /* Space between social icons */
     /* If you want them below the Download CV button, keep flex-direction: column on .cta-buttons
-       and flex-direction: row on .social-links */
+        and flex-direction: row on .social-links */
 }
 
 .social-links img {
@@ -442,6 +442,213 @@ section {
     background-color: #5a6268;
     border-color: #5a6268;
 }
+
+/* --- Designs Section Styling --- */
+.designs-section {
+    padding: 80px 0;
+    background-color: #f8f8f8; /* Light background for contrast */
+    text-align: center;
+}
+
+.designs-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.designs-section .section-title {
+    font-size: 2.8em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.designs-section .section-description {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 50px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Filter Buttons Styling */
+.designs-filter-buttons {
+    margin-bottom: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px; /* Space between buttons */
+}
+
+.filter-btn {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    background-color: #d0d0d0;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color); /* Uses your theme's primary color */
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.designs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid columns */
+    gap: 30px; /* Space between grid items */
+    justify-content: center; /* Center items if they don't fill the row */
+}
+
+.design-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease, height 0.4s ease, margin 0.4s ease, padding 0.4s ease; /* Added transitions for hiding */
+    text-align: left;
+    padding-bottom: 20px; /* Space for text */
+}
+
+.design-item.hidden { /* Class for hidden items in filterable gallery */
+    opacity: 0;
+    transform: scale(0.8);
+    height: 0; /* Collapse height */
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    pointer-events: none; /* Disable clicks */
+    visibility: hidden;
+    overflow: hidden; /* Ensure content is hidden */
+}
+
+
+.design-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.design-item img {
+    width: 100%;
+    height: 220px; /* Fixed height for thumbnails */
+    object-fit: cover; /* Crop to cover the area */
+    display: block; /* Remove extra space below image */
+    border-bottom: 1px solid #eee;
+}
+
+.design-item h3 {
+    font-size: 1.5em;
+    color: #333;
+    margin: 15px 15px 5px 15px;
+}
+
+.design-item p {
+    font-size: 1em;
+    color: #555;
+    margin: 0 15px 15px 15px;
+    line-height: 1.5;
+    max-height: 4.5em; /* Limit to 3 lines for brief description */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Modal Styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+    backdrop-filter: blur(5px); /* Optional: Frosted glass effect */
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Centered */
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px; /* Max width for the modal */
+    position: relative;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    animation: fadeIn 0.3s ease-out; /* Simple animation */
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh; /* Limit height for scrollable content */
+    overflow-y: auto; /* Make content scrollable if it overflows */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: block; /* Remove extra space below image */
+}
+
+.modal-content h3 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.modal-content .btn {
+    align-self: flex-start; /* Align button to the left */
+    margin-top: 15px;
+}
+
+
+/* Close Button */
+.close-button {
+    color: #aaa;
+    font-size: 38px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #333;
+    text-decoration: none;
+    outline: none;
+}
+
 
 /* --- Contact Section --- */
 .contact-section {
@@ -660,6 +867,30 @@ section {
     }
     .contact-info p {
         font-size: 1em;
+    }
+
+    /* Responsive adjustments for modal and filter buttons */
+    .designs-filter-buttons {
+        gap: 10px;
+    }
+    .filter-btn {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    .modal-content h3 {
+        font-size: 1.5em;
+    }
+    .modal-content p {
+        font-size: 1em;
+    }
+    .close-button {
+        font-size: 30px;
+        top: 5px;
+        right: 15px;
     }
 }
 
