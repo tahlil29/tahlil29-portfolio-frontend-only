@@ -203,9 +203,8 @@ section {
 
 .cta-buttons {
     display: flex;
-    flex-direction: column; /* CHANGE to column */
-    gap: 20px;
-    flex-wrap: wrap; /* This can probably be removed if flex-direction is column */
+    flex-direction: column; /* Changed to column */
+    gap: 20px; /* Space between buttons and social links */
     justify-content: center;
     align-items: center;
     margin-top: 20px;
@@ -239,14 +238,21 @@ section {
 
 .social-links {
     display: flex;
-    gap: 20px;
+    gap: 20px; /* Space between social icons */
+    /* If you want them below the Download CV button, keep flex-direction: column on .cta-buttons
+       and flex-direction: row on .social-links */
 }
 
 .social-links img {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
+    /* Corrected size for better visibility, and border-radius for circular shape */
+    width: 35px; /* Adjust as desired */
+    height: 35px; /* Adjust as desired */
+    border-radius: 50%; /* Makes them circular */
+    object-fit: contain; /* Ensures the whole icon is visible within the circle */
     transition: transform 0.2s ease;
+    /* If your images have solid backgrounds and you want them white: */
+    /* filter: invert(100%); */
+    /* If using colored SVGs, remove filter: invert(100%); */
 }
 
 .social-links img:hover {
