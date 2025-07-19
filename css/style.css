@@ -128,7 +128,7 @@ section {
 
 /* --- Animated Hero Banner --- */
 .hero-banner {
-    background-image: url('../assets/images/banner-bg1.avif'); /* CHANGE THIS PATH */
+    background-image: url('../images/banner-bg1.avif'); /* CHANGE THIS PATH */
     background-color: #0056b3; /* Fallback color if image fails to load */
     background-size: cover;
     background-position: center;

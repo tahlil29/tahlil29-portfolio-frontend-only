@@ -1,16 +1,16 @@
-// js/script.js
-
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- Side Menu Functionality ---
     window.openNav = function() {
         document.getElementById("sideMenu").style.width = "250px";
         document.getElementById("mainContent").style.marginLeft = "250px";
+        document.querySelector('.hamburger-menu').classList.add('active');
     }
 
     window.closeNav = function() {
         document.getElementById("sideMenu").style.width = "0";
         document.getElementById("mainContent").style.marginLeft = "0";
+        document.querySelector('.hamburger-menu').classList.remove('active');
     }
 
     // --- Designation Slider Animation ---
@@ -28,17 +28,19 @@ document.addEventListener('DOMContentLoaded', () => {
             currentIndex = (currentIndex + 1) % designations.length;
 
             const nextDesignation = designations[currentIndex];
-            // Reset position for the next one to come from bottom
+            nextDesignation.style.transition = 'none';
             nextDesignation.style.transform = 'translateY(100%)';
-            // A slight delay to ensure position reset before new animation starts
+            nextDesignation.style.opacity = '0';
+
             setTimeout(() => {
+                nextDesignation.style.transition = 'opacity 0.4s ease-in-out, transform 0.4s ease-in-out';
                 nextDesignation.style.opacity = '1';
                 nextDesignation.style.transform = 'translateY(0)';
-            }, 50); // Small delay
+            }, 50);
         }
 
         setTimeout(() => {
-            setInterval(animateDesignations, 3000); // Change text every 3 seconds
+            setInterval(animateDesignations, 3000);
         }, 3000);
     }
 
@@ -54,8 +56,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(contactForm);
             const data = Object.fromEntries(formData.entries());
 
+            if (!data.name || !data.email || !data.message) {
+                formMessage.textContent = 'All fields are required.';
+                formMessage.className = 'form-message error';
+                formMessage.style.display = 'block';
+                return;
+            }
+            if (!/\S+@\S+\.\S+/.test(data.email)) {
+                formMessage.textContent = 'Please enter a valid email address.';
+                formMessage.className = 'form-message error';
+                formMessage.style.display = 'block';
+                return;
+            }
+
+            formMessage.textContent = 'Sending message...';
+            formMessage.className = 'form-message';
+            formMessage.style.display = 'block';
+
+
             try {
-                const response = await fetch('https://tahlil29-portfolio-backend-api.onrender.com/send-message', {
+                const response = await fetch('https://tahlil29-portfolio-backend-api.onrender.com/send-message', { // This URL is from your provided console output
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -74,77 +94,119 @@ document.addEventListener('DOMContentLoaded', () => {
                     formMessage.className = 'form-message error';
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error sending message:', error);
                 formMessage.textContent = 'Network error: Could not reach the server or unexpected issue.';
                 formMessage.className = 'form-message error';
             } finally {
-                formMessage.style.display = 'block';
+                setTimeout(() => {
+                    formMessage.style.display = 'none';
+                }, 5000);
             }
         });
     }
 
-    // --- Design Gallery Data (IMPORTANT: POPULATE THIS ARRAY) ---
-    // This array holds the detailed information for each design.
-    // The `id` here MUST match the `data-design-id` in your HTML's .design-item elements.
+    // --- Design Gallery Data (THIS IS WHERE YOU NEED TO MAKE THE CRUCIAL CHANGES) ---
+    // The 'fullImageSrc' for each object MUST point to the actual path of your large, full-resolution image.
+    // Ensure these paths are correct relative to your HTML file.
     const designsData = [
         {
             id: 'design_fitness_app',
-            fullImageSrc: 'assets/designs/full_fitness_app.jpg', // Path to a larger image for the modal
+            fullImageSrc: 'assets/work/GD1.png', // <--- REPLACE 'assets/work/GD1.png' WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE for this design.
             title: 'Fitness Tracking App UI',
-            description: 'This project involved designing a mobile application interface for fitness tracking, focusing on intuitive navigation, clear data visualization, and an encouraging user experience. Key features include daily activity logs, workout plans, progress charts, and social sharing options. The design prioritizes readability and ease of use for a wide demographic of fitness enthusiasts.',
+            description: 'Designed a clean and motivating UI for a fitness tracking mobile application. This is a detailed description of the design process, challenges faced, and the solutions implemented. It focuses on user experience, visual hierarchy, and interaction design principles to create an intuitive and engaging app.',
             tools: 'Figma, Adobe Illustrator',
-            projectLink: 'https://behance.net/yourprofile/fitness-app-case-study' // Optional: Link to a Behance/Dribbble case study or live prototype
-        },
-        {
-            id: 'design_cafe_brand',
-            fullImageSrc: 'assets/designs/full_cafe_brand.jpg',
-            title: 'Cafe Brand Identity',
-            description: 'A comprehensive branding project for "The Daily Grind" cafe. This included logo design, color palette, typography selection, menu design, packaging, and interior design elements. The goal was to create a warm, inviting, and memorable brand presence that reflected the cafe\'s artisanal coffee and community focus.',
-            tools: 'Adobe Illustrator, Adobe Photoshop',
-            projectLink: 'https://dribbble.com/yourprofile/cafe-branding-project'
-        },
-        {
-            id: 'design_event_poster',
-            fullImageSrc: 'assets/designs/full_event_poster.jpg',
-            title: 'Annual Music Festival Poster',
-            description: 'Designed a series of promotional posters for the "Harmony Fest" music festival. The design aimed to capture the vibrant energy of the event using dynamic layouts, custom typography, and a blend of photography and graphic elements. Various sizes were created for print and digital media campaigns.',
-            tools: 'Adobe Photoshop, Adobe InDesign',
-            projectLink: '' // No external link for this one, or leave blank if not applicable
-        },
-        {
-            id: 'design_analytics_dash',
-            fullImageSrc: 'assets/designs/full_analytics_dash.jpg',
-            title: 'Enterprise Analytics Dashboard',
-            description: 'Developed the user interface for an enterprise-level analytics dashboard. The design challenge was to present complex data in an understandable and actionable way for business users. Features include customizable widgets, interactive charts, and real-time data feeds, designed for clarity and efficiency.',
-            tools: 'Figma, Miro',
-            projectLink: 'https://www.figma.com/proto/your-prototype-link'
-        },
-        {
-            id: 'design_book_cover',
-            fullImageSrc: 'assets/designs/full_book_cover.jpg',
-            title: 'Whispers of Eldoria - Book Cover',
-            description: 'An imaginative book cover illustration for a fantasy novel titled "Whispers of Eldoria." The artwork combines mystical elements with intricate details to draw readers into the world of the story, using a rich color palette and dynamic composition.',
-            tools: 'Procreate, Adobe Photoshop',
             projectLink: ''
         },
         {
-            id: 'design_ecom_website',
-            fullImageSrc: 'assets/designs/full_ecom_website.jpg',
-            title: 'E-commerce Website Redesign',
-            description: 'Undertook a complete UI/UX redesign for an existing e-commerce platform specializing in handcrafted goods. The focus was on improving product discovery, streamlining the checkout process, and enhancing visual appeal to boost conversion rates and user satisfaction.',
-            tools: 'Adobe XD, Figma, Balsamiq',
-            projectLink: 'https://your-ecom-demo.netlify.app/'
+            id: 'design_cafe_brand',
+            fullImageSrc: 'assets/work/GD2.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Cafe Brand Identity',
+            description: 'Developed a complete brand identity, including logo and packaging, for a local cafe. This involved creating a cohesive visual language that reflects the cafe\'s unique atmosphere and values. Mockups were created to show the brand\'s application across various touchpoints.',
+            tools: 'Adobe Illustrator, Adobe Photoshop',
+            projectLink: ''
         },
-        // --- ADD YOUR 20+ DESIGNS HERE ---
-        // EXAMPLE:
-        // {
-        //     id: 'your_design_unique_id',
-        //     fullImageSrc: 'assets/designs/full_your_design.jpg',
-        //     title: 'Your Design Title',
-        //     description: 'A detailed description of this design project, including your role, challenges, and solutions.',
-        //     tools: 'Tools Used: e.g., Figma, Adobe Photoshop, Blender',
-        //     projectLink: 'https://example.com/link-to-case-study-or-prototype' // Optional
-        // },
+        {
+            id: 'design_event_poster',
+            fullImageSrc: 'assets/work/GD3.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Music Event Poster Design',
+            description: 'Created a vibrant and engaging poster for an annual music festival. The design aimed to capture the energetic mood of the event while effectively communicating key information such as dates, lineup, and venue. Various design iterations were explored to find the most impactful visual.',
+            tools: 'Adobe Photoshop, Adobe InDesign',
+            projectLink: ''
+        },
+        {
+            id: 'design_uiux1',
+            fullImageSrc: 'assets/work/UIUX1.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'UI/UX Design Project 1',
+            description: 'A comprehensive UI/UX project focusing on [briefly describe what it is, e.g., a mobile banking app, a recipe sharing platform, etc.]. The design process included user research, wireframing, prototyping, and user testing to ensure a delightful and efficient user experience.',
+            tools: 'Figma, Adobe XD',
+            projectLink: ''
+        },
+        {
+            id: 'design_uiux2',
+            fullImageSrc: 'assets/work/UIUX2.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'UI/UX Design Project 2',
+            description: 'This project involved designing [briefly describe, e.g., an e-learning platform, a travel booking site]. Emphasis was placed on creating an intuitive information architecture, visually appealing interfaces, and seamless user flows to enhance accessibility and engagement.',
+            tools: 'Sketch, InVision',
+            projectLink: ''
+        },
+        {
+            id: 'design_uiux3',
+            fullImageSrc: 'assets/work/UIUX3.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'UI/UX Design Project 3',
+            description: 'A design exploration for [briefly describe, e.g., a smart home control app, a fitness tracker dashboard]. This project delved into creating a personalized and responsive experience, with attention to micro-interactions and visual feedback.',
+            tools: 'Adobe XD, Photoshop',
+            projectLink: ''
+        },
+        {
+            id: 'design_gd4',
+            fullImageSrc: 'assets/work/GD4.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Creative Graphic Design 4',
+            description: 'A graphic design project for [briefly describe, e.g., a social media campaign, an editorial layout]. The goal was to convey a specific message through strong visuals, creative typography, and effective use of color and composition.',
+            tools: 'Adobe Photoshop, Illustrator',
+            projectLink: ''
+        },
+        {
+            id: 'design_gd5',
+            fullImageSrc: 'assets/work/GD5.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Graphic Design Project 5',
+            description: 'This design project explored [briefly describe, e.g., packaging design, brochure layout]. It focused on balancing aesthetic appeal with practical considerations for print and production.',
+            tools: 'Adobe InDesign, Illustrator',
+            projectLink: ''
+        },
+        {
+            id: 'design_gd6',
+            fullImageSrc: 'assets/work/GD6.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Digital Graphic Design 6',
+            description: 'A digital graphic design piece for [briefly describe, e.g., a website hero section, an infographic]. The design aimed for high visual impact and clear communication within digital constraints.',
+            tools: 'Figma, Photoshop',
+            projectLink: ''
+        },
+        {
+            id: 'design_b1',
+            fullImageSrc: 'assets/work/B1.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Branding Project 1',
+            description: 'Development of a unique brand identity for [briefly describe, e.g., a tech startup, a local business]. This included logo concepts, brand guidelines, and application across various marketing materials to establish a strong brand presence.',
+            tools: 'Adobe Illustrator',
+            projectLink: ''
+        },
+        {
+            id: 'design_b2',
+            fullImageSrc: 'assets/work/B2.png', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Brand Collateral Design 2',
+            description: 'Creation of essential brand collateral for [briefly describe, e.g., business cards, letterheads, social media templates]. The focus was on consistency and professional presentation of the brand.',
+            tools: 'Adobe Photoshop, InDesign',
+            projectLink: ''
+        },
+        {
+            id: 'design_b3',
+            fullImageSrc: 'assets/work/B3.jpg', // <--- REPLACE THIS WITH THE ACTUAL PATH TO YOUR *LARGE* IMAGE
+            title: 'Comprehensive Branding 3',
+            description: 'An extensive branding exercise for [briefly describe, e.g., a non-profit organization, a new product launch]. This involved deep dives into brand strategy, competitive analysis, and crafting a compelling visual narrative.',
+            tools: 'Figma, Illustrator',
+            projectLink: ''
+        }
+        // YOU NEED TO ADD ALL YOUR REMAINING DESIGNS HERE, AND FOR EACH ONE,
+        // ENSURE 'fullImageSrc' POINTS TO THE ACTUAL LARGE IMAGE FILE.
     ];
 
 
@@ -161,18 +223,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to filter designs
     function filterDesigns(category) {
-        // Remove 'active' class from all buttons
         filterButtons.forEach(button => button.classList.remove('active'));
-        // Add 'active' class to the clicked button
-        document.querySelector(`.filter-btn[data-filter="${category}"]`).classList.add('active');
+        const activeButton = document.querySelector(`.filter-btn[data-filter="${category}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
 
         designItems.forEach(item => {
             const itemCategories = item.dataset.category ? item.dataset.category.split(' ') : [];
 
             if (category === 'all' || itemCategories.includes(category)) {
                 item.classList.remove('hidden');
-                // For smoother re-appearance, force reflow after removing hidden class
-                void item.offsetWidth; 
+                void item.offsetWidth;
             } else {
                 item.classList.add('hidden');
             }
@@ -196,27 +258,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const design = designsData.find(d => d.id === designId);
 
         if (design) {
-            modalDesignImage.src = design.fullImageSrc;
+            modalDesignImage.src = design.fullImageSrc; // This line uses the 'fullImageSrc' from your data
             modalDesignTitle.textContent = design.title;
             modalDesignDescription.textContent = design.description;
-            modalDesignTools.textContent = design.tools;
+            modalDesignTools.textContent = 'Tools: ' + design.tools;
 
-            if (design.projectLink) {
+            if (design.projectLink && design.projectLink.trim() !== '') {
                 modalDesignLink.href = design.projectLink;
                 modalDesignLink.style.display = 'inline-block';
             } else {
                 modalDesignLink.style.display = 'none';
             }
 
-            designModal.style.display = 'flex'; // Use flex to center the modal content
-            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+            designModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        } else {
+            console.warn(`Design with ID "${designId}" not found in designsData.`);
         }
     }
 
     // Function to close the design modal
     function closeDesignModal() {
         designModal.style.display = 'none';
-        document.body.style.overflow = ''; // Restore scrolling
+        document.body.style.overflow = '';
     }
 
     // Add event listeners to each design item to open modal
@@ -235,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close modal when clicking outside the modal-content
     if (designModal) {
         designModal.addEventListener('click', (event) => {
-            if (event.target === designModal) { // Check if the click was directly on the modal backdrop
+            if (event.target === designModal) {
                 closeDesignModal();
             }
         });
